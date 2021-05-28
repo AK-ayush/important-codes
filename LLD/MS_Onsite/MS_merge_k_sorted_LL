@@ -1,0 +1,117 @@
+#include <iostream>
+#include <vector>
+// #include <priority_queue>
+#include <bits/stdc++.h>
+
+using namespace std;
+
+struct Node {
+    int val;
+    struct Node* next;
+    Node(int val) : val(val), next(nullptr) {}
+};
+
+struct data{
+    int key;
+    Node* head;
+    data(int key, Node* head) : key(key), head(head) {}
+};
+
+struct cmp{
+    bool operator()(data& d1 , data& d2){
+        return d1.key > d2.key;
+    }
+};
+
+
+Node* solve(vector<Node*>& listofLL){
+    int k = listofLL.size();
+    priority_queue<data, vector<data>, cmp> min_pq;
+
+    for(Node* h : listofLL){
+        if(h) min_pq.push({h->val, h});
+    }
+
+    Node* sortedLL = nullptr;
+    Node* newHead = nullptr;
+
+    while(!min_pq.empty()){
+        data d = min_pq.top(); min_pq.pop();
+        if(!sortedLL){
+            Node* next = d.head->next;
+            sortedLL = d.head;
+            newHead = sortedLL;
+            d.head->next = nullptr;
+            if(next) min_pq.push({next->val, next});
+        }
+        else{
+            Node* next = d.head->next;
+            sortedLL->next = d.head;
+            d.head->next = nullptr;
+            sortedLL = sortedLL->next;
+            if(next) min_pq.push({next->val, next});
+        }
+    }
+    return newHead;
+}
+
+
+int main() {
+    // you can write to stdout for debugging purposes, e.g.
+    cout << "This is a debug message" << std::endl;
+    Node* head1 = new Node(12);
+    head1->next = new Node(15);
+
+    Node* head2 = new Node(2);
+    head2->next = new Node(5);
+
+    Node* head3 = new Node(-22);
+    head3->next = new Node(25);
+
+    Node* head4 = nullptr;
+    
+    vector<Node*> LL;
+    LL.push_back(head1);
+    LL.push_back(head2);
+    LL.push_back(head3);
+    LL.push_back(head4);
+
+    Node* result = solve(LL);
+
+    while(result){
+        cout<<result->val<<" ";
+        result = result->next;
+    }
+
+
+    return 0;
+}
+
+/*
+
+row = [5,3]
+col = [2,6]
+
+[]
+[]
+
+
+[1,4]
+[1,2]
+
+(0,0) -> {0, min(row[0], col[0])} {0..2}
+[0, 5]
+[2, 1]
+
+
+
+
+
+(i,j) -> {0, -neg}
+----------
+5 LL
+h1 ... h5
+
+min priority queue <>. nlogk. 
+
+*/
