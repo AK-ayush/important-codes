@@ -1,0 +1,37 @@
+Each SM in a GPU is designed to support concurrent execution of hundreds of threads, and there
+are generally multiple SMs per GPU, so it is possible to have thousands of threads executing 
+concurrently on a single GPU. When a kernel grid is launched, the thread blocks of that kernel grid are
+distributed among available SMs for execution. Once scheduled on an SM, the threads of a thread
+block execute concurrently only on that assigned SM. Multiple thread blocks may be assigned to the
+same SM at once and are scheduled based on the availability of SM resources. Instructions within
+a single thread are pipelined to leverage instruction-level parallelism, in addition to the thread-level
+parallelism you are already familiar with in CUDA.
+
+
+CUDA employs a Single Instruction Multiple Thread (SIMT) architecture to manage and execute
+threads in groups of 32 called warps. All threads in a warp execute the same instruction at the same
+time. Each thread has its own instruction address counter and register state, and carries out the current 
+instruction on its own data. Each SM partitions the thread blocks assigned to it into 32-thread
+warps that it then schedules for execution on available hardware resources.
+
+
+The SIMT architecture is similar to the SIMD (Single Instruction, Multiple Data) architecture. Both
+SIMD and SIMT implement parallelism by broadcasting the same instruction to multiple execution
+units. A key difference is that SIMD requires that all vector elements in a vector execute together in
+a unifi ed synchronous group, whereas SIMT allows multiple threads in the same warp to execute
+independently. Even though all threads in a warp start together at the same program address, it is
+possible for individual threads to have different behavior.
+
+
+Giga Thread: The Giga thread engine is a global scheduler that distributes thread blocks to the SM warps schedulers.
+
+
+Concurrent kernel execution allows programs that execute a number of small kernels to fully utilize the GPU.
+Concurrent kernel execution makes the GPU appear more like a MIMD architecture from the programmer’s perspective.
+
+Dynamic Parallelism: it allows the GPU to dynamically launch new grids. With this feature, any kernel can launch another kernel and manage any
+inter-kernel dependencies needed to correctly perform additional work. This feature makes it easier
+for you to create and optimize recursive and data-dependent execution patterns.
+
+Hyper-Q: it adds more simultaneous hardware connections between the CPU and GPU, enabling CPU
+cores to simultaneously run more tasks on the GPU. As a result, you can expect increased GPU utilization and reduced CPU idle time 
